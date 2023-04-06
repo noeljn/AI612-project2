@@ -18,4 +18,4 @@ wandb/
 
 # Datasets
 train/
-preData/
+output/
