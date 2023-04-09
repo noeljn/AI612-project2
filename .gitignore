@@ -19,6 +19,3 @@ wandb/
 # Datasets
 train/
 output/
-
-# Librarie
-DescEmb-master/
