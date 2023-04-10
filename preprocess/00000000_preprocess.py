@@ -193,7 +193,7 @@ def main(args):
     root_dir = args.root
     dest_dir = args.dest
     
-    preprocess(args.data_input_path, 
+    preprocess(root_dir, 
                     item_list,
                    csv_files_dict, 
                    columns_map_dict, 
