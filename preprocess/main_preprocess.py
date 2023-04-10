@@ -3,15 +3,18 @@ import sys
 sys.path.append("DescEmb-master/preprocess")
 sys.path.append("DescEmb-master/trainers")
 sys.path.append("DescEmb-master/datasets")
+sys.path.append("DescEmb-master/")
 from create_dataset import create_MIMIC_dataset, create_eICU_dataset
 from dataframe_gen import preprocess
 from numpy_convert import convert2numpy
 from preprocess_utils import label_npy_file
 import os
+import random
 
 import torch
 import torch.multiprocessing as mp
-from trainers import Trainer, Word2VecTrainer
+from trainer import Trainer
+from word2vec_trainer import Word2VecTrainer
 
 def get_parser():
     """
@@ -143,10 +146,14 @@ def main(args):
     args = argparse.Namespace()
     args.batch_size = 128
     args.value_embed_type = 'nonconcat'
+    args.seed = 2023
+    args.fold = None
+    args.ratio = 100
     args.data = "train/"
     args.save_dir = "checkpoint"
     args.save_prefix = "checkpoint"
     args.epoch = 10
+    args.task = "readmission"
 
     trainer = Word2VecTrainer(args)
     trainer.train()
