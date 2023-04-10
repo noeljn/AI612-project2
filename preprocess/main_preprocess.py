@@ -47,11 +47,6 @@ def main(args):
         You can dump any type of files such as json, cPickle, or whatever your dataset can handle.
     """
 
-    root_dir = args.root
-    dest_dir = args.dest
-
-
-    
     mimic_csv_files = {'lab':'LABEVENTS', 
                         'med':'PRESCRIPTIONS',
                         'inf': 'INPUTEVENTS'}
@@ -141,17 +136,9 @@ def main(args):
     wd = os.getcwd()
     print('working directory .. : ', wd)
 
-    #create_MIMIC_dataset(os.path.join(args.data_input_path, 'mimic'))
-    #create_eICU_dataset(os.path.join(args.data_input_path, 'eicu'))
+    src_list = ['eicu']
 
-    # preprocess(args.root, 
-    #                 item_list,
-    #                csv_files_dict, 
-    #                columns_map_dict, 
-    #                issue_map, 
-    #                mimic_def_file,
-    #                150,
-    #                'MICU')
+    #preprocess(args.root, args.dest, src_list, item_list, csv_files_dict, columns_map_dict, issue_map, mimic_def_file)
     
     args = argparse.Namespace()
     args.batch_size = 128
