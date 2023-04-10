@@ -94,7 +94,7 @@ def create_MIMIC_dataset(input_path):
     # print("min length: ", np.array(dx1_length).min())
 
     #save as pickle
-    pickle.dump(cohort_mm, open(os.path.join(input_path, 'mimic_cohort.pk'), 'wb'), -1)
+    pickle.dump(cohort_mm, open(os.path.join(input_path, 'mimiciii_cohort.pk'), 'wb'), -1)
 
 # create mimic4
 def create_MIMIC4_dataset(input_path):
@@ -180,7 +180,7 @@ def create_MIMIC4_dataset(input_path):
     # print("min length: ", np.array(dx1_length).min())
 
     #save as pickle
-    pickle.dump(cohort_mm, open(os.path.join(input_path, 'mimic4_cohort.pk'), 'wb'), -1)
+    pickle.dump(cohort_mm, open(os.path.join(input_path, 'mimiciv_cohort.pk'), 'wb'), -1)
 
 # Create eICU dataset
 def create_eICU_dataset(input_path):
