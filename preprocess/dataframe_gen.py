@@ -259,7 +259,11 @@ def preprocess(input_path,
                 data_type):
 
     for src in ['mimiciii', 'eicu', 'mimiciv']:
-        df_icu = pd.read_pickle(os.path.join(input_path, src, f'{src}_cohort.pk'))
+        if src == 'eicu':
+            df_icu = pd.read_csv(os.path.join(input_path, src, f'patient.csv')) 
+        else:
+            df_icu = pd.read_csv(os.path.join(input_path, src, f'icustays.csv')) 
+
         df_icu = ID_rename(df_icu, src)
         for item in item_list:
             print('data preparation initialization .. {} {}'.format(src, item))
