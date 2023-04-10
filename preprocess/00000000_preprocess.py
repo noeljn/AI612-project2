@@ -43,6 +43,7 @@ def main(args):
         Note that --dest directory will be an input to your dataset class (i.e., --data_path).
         You can dump any type of files such as json, cPickle, or whatever your dataset can handle.
     """
+    root = arg.root
     
     args = get_parser().parse_args()
     # file names
@@ -185,15 +186,15 @@ def main(args):
     wd = os.getcwd()
     print('working directory .. : ', wd)
 
-    create_MIMIC_dataset(os.path.join(args.data_input_path, 'mimiciii'))
-    create_MIMIC4_dataset(os.path.join(args.data_input_path, 'mimiciv'))
-    create_eICU_dataset(os.path.join(args.data_input_path, 'eicu'))
+    create_MIMIC_dataset(os.path.join(root, 'mimiciii'))
+    create_MIMIC4_dataset(os.path.join(root, 'mimiciv'))
+    create_eICU_dataset(os.path.join(root, 'eicu'))
      
 
-    root_dir = args.root
-    dest_dir = args.dest
+    #root_dir = args.root
+    #dest_dir = args.dest
     
-    preprocess(root_dir, 
+    preprocess(root, 
                     item_list,
                    csv_files_dict, 
                    columns_map_dict, 
