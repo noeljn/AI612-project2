@@ -43,7 +43,7 @@ def main(args):
         Note that --dest directory will be an input to your dataset class (i.e., --data_path).
         You can dump any type of files such as json, cPickle, or whatever your dataset can handle.
     """
-    root = arg.root
+    root = args.root
     
     args = get_parser().parse_args()
     # file names
