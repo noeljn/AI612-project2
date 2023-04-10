@@ -227,7 +227,6 @@ def sortbyoffset(df):
     return sorted
 
 def preprocess(input_path,
-               output_path,
                src_list,
                 item_list,
                 csv_files_dict, 
@@ -303,8 +302,8 @@ def preprocess(input_path,
             del df_short, df_long
 
         print('Preprocessing completed.')    
-        print('Writing', '{}_df.pkl'.format(src), 'to', output_path)
-        df.to_pickle(os.path.join(output_path,'{}_df.pkl'.format(src)))
+        print('Writing', '{}_df.pkl'.format(src), 'to', input_path)
+        df.to_pickle(os.path.join(input_path,'{}_df.pkl'.format(src)))
     
     #df_mm = pd.read_pickle(os.path.join(input_path,'mimic_df.pkl'.format(src)))
     #df_ei = pd.read_pickle(os.path.join(input_path,'eicu_df.pkl'.format(src)))
