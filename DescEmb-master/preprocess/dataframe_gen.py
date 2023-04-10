@@ -227,15 +227,17 @@ def sortbyoffset(df):
     return sorted
 
 def preprocess(input_path,
+               output_path,
+               src_list,
                 item_list,
                 csv_files_dict, 
                 columns_map_dict, 
                 issue_map, 
                 mimic_def_file,
-                max_length,
-                data_type):
+                max_length=150,
+                data_type='MICU'):
 
-    for src in ['eicu']:
+    for src in src_list:
         df_icu = pd.read_csv(os.path.join(input_path, src, f'patient.csv'))
         df_icu = ID_rename(df_icu, src)
         for item in item_list:
@@ -301,8 +303,8 @@ def preprocess(input_path,
             del df_short, df_long
 
         print('Preprocessing completed.')    
-        print('Writing', '{}_df.pkl'.format(src), 'to', input_path)
-        df.to_pickle(os.path.join(input_path,'{}_df.pkl'.format(src)))
+        print('Writing', '{}_df.pkl'.format(src), 'to', output_path)
+        df.to_pickle(os.path.join(output_path,'{}_df.pkl'.format(src)))
     
     #df_mm = pd.read_pickle(os.path.join(input_path,'mimic_df.pkl'.format(src)))
     #df_ei = pd.read_pickle(os.path.join(input_path,'eicu_df.pkl'.format(src)))
