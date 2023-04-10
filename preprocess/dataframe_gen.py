@@ -90,10 +90,10 @@ def name_dict(df, csv_file, input_path, src, mimic_def_file):
         dict_name= mimic_def_file[csv_file]
         dict_path = os.path.join(input_path, src, dict_name+'.csv')
         code_dict = pd.read_csv(dict_path)
-        if src == "mimic":
+        if src == "mimiciii":
             key = code_dict['ITEMID']
             value = code_dict['LABEL']
-        elif src == "mimic4":
+        elif src == "mimiciv":
             key = code_dict['itemid']
             value = code_dict['label']
         code_dict = dict(zip(key,value))
@@ -114,7 +114,7 @@ def ID_filter(df_icu, df):
 
 def time_filter(df_icu, df, source, data_type):
     time_delta = datetime.timedelta(hours=12)
-    if source =='mimic': 
+    if source =='mimiciii': 
         df = pd.merge(df, df_icu[['ID', 'INTIME', 'OUTTIME']], how='left', on='ID')
         df = df[df['code_time']!=' ']
         if 'INTIME_x' in df.columns:
@@ -130,7 +130,7 @@ def time_filter(df_icu, df, source, data_type):
         df['code_offset'] = df['code_time'] - df['INTIME']
         df['code_offset'] = df['code_offset'].apply(lambda x : x.seconds//60, 4)
 
-    elif source =='mimic4': 
+    elif source =='mimiciv': 
         df = pd.merge(df, df_icu[['ID', 'intime', 'outtime']], how='left', on='ID')
         df = df[df['code_time']!=' ']
         for col_name in ['code_time', 'intime', 'outtime']:
@@ -215,9 +215,9 @@ def making_vocab(df):
 
 
 def ID_rename(df_icu, src):
-    if src =='mimic' : 
+    if src =='mimiciii' : 
         icu_ID = 'HADM_ID'
-    elif src =='mimic4' : 
+    elif src =='mimiciv' : 
         icu_ID = 'hadm_id'
     elif src=='eicu':
         icu_ID = 'patientunitstayid'
@@ -258,20 +258,20 @@ def preprocess(input_path,
                 max_length,
                 data_type):
 
-    for src in ['mimic', 'eicu', 'mimic4']:
+    for src in ['mimiciii', 'eicu', 'mimiciv']:
         df_icu = pd.read_pickle(os.path.join(input_path, src, f'{src}_cohort.pk'))
         df_icu = ID_rename(df_icu, src)
         for item in item_list:
             print('data preparation initialization .. {} {}'.format(src, item))
             file = csv_files_dict[src][item]
             columns_map = columns_map_dict[src][file] # the files from mimic that we want
-            if src =='mimic' and item =='inf':
+            if src =='mimiciii' and item =='inf':
                 df = mimic_inf_merge(file, input_path, src)
             elif src=='eicu' and item=='med':
                 df = eicu_med_revise(file, input_path, src)
             elif src=='eicu' and item=='inf':
                 df = eicu_inf_revise(file, input_path, src)
-            elif src =='mimic4' and item == 'lab':
+            elif src =='mimiciv' and item == 'lab':
                 df = pd.read_csv(os.path.join(input_path, src, file+'.csv'))
                 df = df.drop(columns='value')
                 df = df.reset_index(drop=True)
@@ -336,14 +336,14 @@ def preprocess(input_path,
             df = pd.concat([df_short, df_long], axis=0).reset_index(drop=True)
             del df_short, df_long
 
-        if src =='mimic':
+        if src =='mimiciii':
             df['ID'] = list(df['ICUSTAY_ID'])
             #df = df.drop_duplicates(['ID', 'seq_len'])
             #df = df.sort_values('ID')
             #df = df.reset_index(drop=True)
             #print('length of mimic4 : {}'.format(len(df)))
 
-        if src =='mimic4':
+        if src =='mimiciv':
             df['ID'] = list(df['stay_id'])
             df = df.drop_duplicates(['ID', 'seq_len'])
             df = df.sort_values('ID')
@@ -354,13 +354,11 @@ def preprocess(input_path,
         print('Writing', '{}_df.pkl'.format(src), 'to', input_path)
         df.to_pickle(os.path.join(input_path,'{}_df.pkl'.format(src)))
     
-    df_mm = pd.read_pickle(os.path.join(input_path,'mimic_df.pkl'.format(src)))
-    df_m4 = pd.read_pickle(os.path.join(input_path,'mimic4_df.pkl'.format(src)))
+    df_mm = pd.read_pickle(os.path.join(input_path,'mimiciii_df.pkl'.format(src)))
+    df_m4 = pd.read_pickle(os.path.join(input_path,'mimiciv_df.pkl'.format(src)))
     df_ei = pd.read_pickle(os.path.join(input_path,'eicu_df.pkl'.format(src)))
     df_pooled = pd.concat((df_mm,df_ei), axis=0).reset_index(drop=True)
     df_pooled_all = pd.concat((df_pooled,df_m4), axis=0).reset_index(drop=True)
     df_pooled_all.to_pickle(os.path.join(input_path,'pooled_df.pkl'.format(src)))
     del df_mm, df_ei, df_m4, df_pooled                  
 
-
-        
