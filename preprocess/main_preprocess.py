@@ -138,7 +138,7 @@ def main(args):
 
     src_list = ['eicu']
 
-    #preprocess(args.root, args.dest, src_list, item_list, csv_files_dict, columns_map_dict, issue_map, mimic_def_file)
+    #preprocess(args.root, src_list, item_list, csv_files_dict, columns_map_dict, issue_map, mimic_def_file)
     
     args = argparse.Namespace()
     args.batch_size = 128
