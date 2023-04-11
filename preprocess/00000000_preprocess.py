@@ -43,6 +43,20 @@ def main(args):
         Note that --dest directory will be an input to your dataset class (i.e., --data_path).
         You can dump any type of files such as json, cPickle, or whatever your dataset can handle.
     """
+
+    print('preprocessing data...')
+    #preprocess_data(args)
+    print('preprocessing done!')
+
+    print('embedding data...')
+    #embed_data(args)
+    print('embedding done!')
+
+def embed_data(args):
+    return
+
+def preprocess_data(args):
+
     root = args.root
     
     args = get_parser().parse_args()
@@ -202,8 +216,7 @@ def main(args):
                    mimic_def_file,
                    args.max_length,
                    args.data_type) 
-    
-    print('preprocess finish!!')
+
 
 if __name__ == "__main__":
     parser = get_parser()
