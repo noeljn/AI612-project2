@@ -49,14 +49,16 @@ def main(args):
     print('preprocessing done!')
 
     print('embedding data...')
-    #embed_data(args)
+    embed_data(args)
     print('embedding done!')
 
 def embed_data(args):
+    # Pretrained embedding
+
+    
     return
 
 def preprocess_data(args):
-
     root = args.root
     
     args = get_parser().parse_args()
