@@ -280,13 +280,8 @@ def preprocess(input_path,
             print('df_load ! .. {} {}'.format(src, item))
 
             df = column_rename(df, columns_map)
-
-            
-
             df = issue_delete(df, file, issue_map)
-
             df = name_dict(df, file, input_path, src, mimic_def_file)
-
             df = null_convert(df)
             df = ID_filter(df_icu, df)
             df = time_filter(df_icu, df, src, data_type)
@@ -308,16 +303,12 @@ def preprocess(input_path,
 
         df = merge_df(lab, med ,inf)
         print('lab med inf three categories merged in one!')
-        #breakpoint()
-        #print(df)
         df = sortbyoffset(df)
         df = list_prep(df, df_icu)
         df = min_length(df, 5).reset_index(drop=True)
         df['code_order'] = df['code_offset'].map(lambda x : offset2order(x))  
-        # sequence align with offset order
 
         df['seq_len'] = df['code_name'].map(len)
-        #pad
        
         column_list = ['code_name', 'code_offset', 'value', 'uom', 'code_order']
         if data_type == 'MICU':
@@ -359,6 +350,14 @@ def preprocess(input_path,
     df_ei = pd.read_pickle(os.path.join(input_path,'eicu_df.pkl'.format(src)))
     df_pooled = pd.concat((df_mm,df_ei), axis=0).reset_index(drop=True)
     df_pooled_all = pd.concat((df_pooled,df_m4), axis=0).reset_index(drop=True)
-    df_pooled_all.to_pickle(os.path.join(input_path,'pooled_df.pkl'.format(src)))
-    del df_mm, df_ei, df_m4, df_pooled                  
+
+    df_pooled_final = df_pooled_all[['dataset', 'ID','age', 'code_name', 'code_offset', 'value', 'uom', 'code_order', 'seq_len', 'mortality_prediction_short',
+       'mortality_prediction_long', 'readmission_prediction', 'd1', 'd2', 'd3',
+       'd4', 'd5', 'd6', 'd7', 'd8', 'd9', 'd10', 'd11', 'd12', 'd13', 'd14',
+       'd15', 'd16', 'd17', 'los_short', 'los_long', 'final_acuity',
+       'imminent_discharge', 'creatinine_level', 'bilirubin_level',
+       'platelet_level', 'white_blood_cell_level']]
+    
+    df_pooled_final.to_pickle(os.path.join(input_path,'pooled_df.pkl'.format(src)))
+    del df_mm, df_ei, df_m4, df_pooled, df_pooled_all, df_pooled_final                 
 
