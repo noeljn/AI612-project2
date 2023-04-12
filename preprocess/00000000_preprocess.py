@@ -186,13 +186,10 @@ def main(args):
     wd = os.getcwd()
     print('working directory .. : ', wd)
 
-    create_MIMIC_dataset(os.path.join(root, 'mimiciii'))
-    create_MIMIC4_dataset(os.path.join(root, 'mimiciv'))
-    create_eICU_dataset(os.path.join(root, 'eicu'))
-     
+    create_MIMIC_dataset(os.path.join(args.data_input_path, 'mimiciii'), os.path.join(args.data_input_path, 'labels'))
+    create_MIMIC4_dataset(os.path.join(args.data_input_path, 'mimiciv'), os.path.join(args.data_input_path, 'labels'))
+    create_eICU_dataset(os.path.join(args.data_input_path, 'eicu'), os.path.join(args.data_input_path, 'labels'))
 
-    #root_dir = args.root
-    #dest_dir = args.dest
     
     preprocess(root, 
                     item_list,
