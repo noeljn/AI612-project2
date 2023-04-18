@@ -1,12 +1,12 @@
 #from . import register_dataset, BaseDataset
-from dataset_registry import register_dataset
+#from dataset_registry import register_dataset
 from dataset import BaseDataset
 import os
 import torch
 from typing import List, Dict
 
 
-@register_dataset("00000000_dataset")
+#@register_dataset("00000000_dataset")
 class MyDataset00000000(BaseDataset):
     def __init__(
         self,
@@ -23,13 +23,13 @@ class MyDataset00000000(BaseDataset):
         data = self.data[index]
         label = self.labels[index]
 
-        return {"data_key": data, "label": label}
+        return {"data": data, "label": label}
 
     def __len__(self) -> int:
         return len(self.data)
 
     def collator(self, samples: List[Dict[str, torch.Tensor]]) -> Dict[str, torch.Tensor]:
-        data_key = torch.stack([sample['data_key'] for sample in samples], dim=0)
+        data = torch.stack([sample['data'] for sample in samples], dim=0)
         labels = torch.stack([sample['label'] for sample in samples], dim=0)
 
-        return {"data_key": data_key, "label": labels}
+        return {"data": data, "label": labels}
