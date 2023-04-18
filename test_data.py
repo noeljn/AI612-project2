@@ -20,12 +20,9 @@ def generate_new_data(data_path, num_samples=1000):
         label.extend([random.randint(0, 4) for _ in range(4)])  # Creatinine, Bilirubin, Platelet, and WBC levels
         labels.append(label)
 
-    # Save features and labels
-    with open(os.path.join(data_path, 'features.pkl'), 'wb') as f:
-        pickle.dump(features, f)
-    with open(os.path.join(data_path, 'labels.pkl'), 'wb') as f:
-        pickle.dump(labels, f)
-
+    # Save features and labels with torch.save
+    torch.save(features, os.path.join(data_path, 'features.pkl'))
+    torch.save(labels, os.path.join(data_path, 'labels.pkl'))
 if __name__ == "__main__":
     data_path = '/Users/noelkj/Documents/GitHub/AI612-project2/train/testdata/'
     generate_new_data(data_path)

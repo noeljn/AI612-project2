@@ -21,7 +21,7 @@ class MyDataset00000000(BaseDataset):
 
     def __getitem__(self, index: int) -> Dict[str, torch.Tensor]:
         data = self.data[index]
-        label = self.labels[index]
+        label = torch.tensor(self.labels[index], dtype=torch.long)
 
         return {"data": data, "label": label}
 

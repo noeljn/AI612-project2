@@ -9,14 +9,14 @@ import torch.nn.functional as F
 #@register_model("00000000_model")
 class MyModel00000000(BaseModel):
 
-    def __init__(self, input_size=12800, hidden_size=512, num_layers=1, dropout_rate=0.2, **kwargs):
+    def __init__(self, input_size=128, hidden_size=512, num_layers=1, dropout_rate=0.2, **kwargs):
         super().__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.hidden_size = hidden_size
         self.num_layers = num_layers
 
-        # Define the GRU layer
-        self.gru = nn.GRU(input_size, hidden_size, num_layers, batch_first=True)
+        # Define the lstm layer
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
         
         # Define the batch normalization layer
         self.batchnorm = nn.BatchNorm1d(hidden_size)
@@ -55,11 +55,14 @@ class MyModel00000000(BaseModel):
     
     def forward(self, x, **kwargs):
 
+        x = x.view(-1, 100, 128)
+
         # Initialize hidden and cell state
         h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
+        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
         
-        # Pass the input through the GRU layer 
-        x, _ = self.gru(x, h0)
+        # Pass the input through the LSTM layer
+        x, _ = self.lstm(x, (h0, c0))
         
         # Apply batch normalization
         x = self.batchnorm(x[:, -1, :])
@@ -77,25 +80,33 @@ class MyModel00000000(BaseModel):
 
         return output
         
-    def multitask_loss(self, predictions, targets):
+    def multitask_loss(self, cls, predictions, targets):
         # Define loss functions for each task
         loss_functions = {
-            "short_mortality": F.cross_entropy,
-            "long_mortality": F.cross_entropy,
-            "readmission": F.cross_entropy,
-            "diagnosis": F.binary_cross_entropy_with_logits,
-            "short_los": F.cross_entropy,
-            "long_los": F.cross_entropy,
-            "final_acuity": F.cross_entropy,
-            "imminent_discharge": F.cross_entropy,
-            "creatinine_level": F.cross_entropy,
-            "bilirubin_level": F.cross_entropy,
-            "platelet_level": F.cross_entropy,
-            "wbc_level": F.cross_entropy,
+            "short_mortality": nn.CrossEntropyLoss(),
+            "long_mortality": nn.CrossEntropyLoss(),
+            "readmission": nn.CrossEntropyLoss(),
+            "diagnosis": nn.BCEWithLogitsLoss(),
+            "short_los": nn.CrossEntropyLoss(),
+            "long_los": nn.CrossEntropyLoss(),
+            "final_acuity": nn.CrossEntropyLoss(),
+            "imminent_discharge": nn.CrossEntropyLoss(),
+            "creatinine_level": nn.CrossEntropyLoss(),
+            "bilirubin_level": nn.CrossEntropyLoss(),
+            "platelet_level": nn.CrossEntropyLoss(),
+            "wbc_level": nn.CrossEntropyLoss(),
         }
         
         # Calculate loss for each task
-        losses = {task: loss_functions[task](predictions[task], targets[task]) for task in predictions.keys()}
+        losses = {}
+        idx = 0
+        for task, prediction in predictions.items():
+            i = cls[task]
+            target_task = [t[idx:i] for t in targets]
+            # Reshape the target
+            target_task = torch.stack(target_task)
+            losses[task] = loss_functions[task](prediction, target_task)
+            idx = i
         
         # Combine the losses
         total_loss = sum(losses.values())
