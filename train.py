@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import argparse
-import logging
+import logging.config
 from typing import Dict, Any, List, Optional
 import math
 import random
