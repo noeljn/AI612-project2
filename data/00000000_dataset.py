@@ -1,63 +1,34 @@
+import os
+import torch
 from . import BaseDataset, register_dataset
+from typing import List, Dict
 
 @register_dataset("00000000_dataset")
 class MyDataset00000000(BaseDataset):
-    """
-    TODO:
-        create your own dataset here.
-        Rename the class name and the file name with your student number
-    
-    Example:
-    - 20218078_dataset.py
-        @register_dataset("20218078_dataset")
-        class MyDataset20218078(BaseDataset):
-            (...)
-    """
-
     def __init__(
         self,
         data_path: str, # data_path should be a path to the processed features
-        # ...,
         **kwargs,
     ):
-        super().__init__()
-        ...
-    
-    def __getitem__(self, index):
-        """
-        Note:
-            You must return a dictionary here or in collator so that the data loader iterator
-            yields samples in the form of python dictionary. For the model inputs, the key should
-            match with the argument of the model's forward() method.
-            Example:
-                class MyDataset(...):
-                    ...
-                    def __getitem__(self, index):
-                        (...)
-                        return {"data_key": data, "label": label}
-                
-                class MyModel(...):
-                    ...
-                    def forward(self, data_key, **kwargs):
-                        (...)
-                
-        """
-        ...
-    
-    def __len__(self):
-        ...
+        
+        print(f"Loading data from {data_path}")
+        
+        super().__init__()   
+        
+        self.data = torch.load(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'features.pkl'))
+        self.labels = torch.load(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'labels.pkl'))
 
-    def collator(self, samples):
-        """Merge a list of samples to form a mini-batch.
-        
-        Args:
-            samples (List[dict]): samples to collate
-        
-        Returns:
-            dict: a mini-batch suitable for forwarding with a Model
-        
-        Note:
-            You can use it to make your batch on your own such as outputting padding mask together.
-            Otherwise, you don't need to implement this method.
-        """
-        raise NotImplementedError
+    def __getitem__(self, index: int) -> Dict[str, torch.Tensor]:
+        data = torch.tensor(self.data[index], dtype=torch.float32)
+        label = torch.tensor(self.labels[index], dtype=torch.long)
+
+        return {"data": data, "label": label}
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    def collator(self, samples: List[Dict[str, torch.Tensor]]) -> Dict[str, torch.Tensor]:
+        data = torch.stack([sample['data'] for sample in samples], dim=0)
+        labels = torch.stack([sample['label'] for sample in samples], dim=0)
+
+        return {"data": data, "label": labels}
