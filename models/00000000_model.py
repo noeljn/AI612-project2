@@ -8,29 +8,22 @@ from . import BaseModel, register_model
 @register_model("00000000_model")
 class MyModel00000000(BaseModel):
 
-    def __init__(self, input_size=128, hidden_size=512, num_layers=2, dropout_rate=0.2, **kwargs):
+    def __init__(self, input_size=12800, sequences=100, hidden_size=512, num_layers=2, dropout_rate=0.5, **kwargs):
         super().__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.hidden_size = hidden_size
         self.num_layers = num_layers
 
         # Define the transformer layer
-        self.transformer = nn.TransformerEncoderLayer(d_model=input_size, nhead=8, dim_feedforward=hidden_size)
-
-        # Define the batch normalization layer
-        self.batchnorm = nn.BatchNorm1d(hidden_size)
-        
-        # Define the dropout layer
+        self.transformer = nn.TransformerEncoderLayer(d_model=input_size/sequences, nhead=8, dim_feedforward=hidden_size)
         self.dropout = nn.Dropout(dropout_rate)
-
-        # Define the ReLU activation function
-        self.relu = nn.ReLU()
+        self.batch_norm = nn.BatchNorm1d(input_size)
 
         self.task_layers = nn.ModuleDict({
             "short_mortality": nn.Linear(input_size, 1),
             "long_mortality": nn.Linear(input_size, 1),
             "readmission": nn.Linear(input_size, 1),
-            "diagnosis_1": nn.Linear(input_size, 1), # 17 diagnoses, each binary
+            "diagnosis_1": nn.Linear(input_size, 1),
             "diagnosis_2": nn.Linear(input_size, 1),
             "diagnosis_3": nn.Linear(input_size, 1),
             "diagnosis_4": nn.Linear(input_size, 1),
@@ -71,6 +64,10 @@ class MyModel00000000(BaseModel):
         # Pass the input through the transformer layer
         x = self.transformer(x)
         
+        # Apply dropout and batch normalization
+        x = self.dropout(x)
+        x = self.batch_norm(x)
+
         # Apply mean pooling along the sequence dimension
         x = torch.mean(x, dim=1)
 
